@@ -1,8 +1,9 @@
-import { OrbitControls } from "@react-three/drei";
+import { Line, OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import { QuadraticBezierCurve3, Vector3 } from "three";
 import "./App.css";
+import Model from "./components/Untitled";
 
 const path = new QuadraticBezierCurve3(
   new Vector3(-5, -0.5, -1),
@@ -10,7 +11,8 @@ const path = new QuadraticBezierCurve3(
   new Vector3(5, -0.5, -1)
 );
 function App() {
-  const [percentage, setPercentage] = useState(0);
+  const [percentage, setPercentage] = useState(20);
+  const [showSunPath, setShowSunPath] = useState(false);
 
   return (
     <div style={{ height: "100vh" }}>
@@ -33,8 +35,8 @@ function App() {
           <h1>SonnenStudie 3000</h1>
           <input
             type="range"
-            min="0"
-            max="100"
+            min="20"
+            max="80"
             value={percentage}
             onChange={({ target }) => setPercentage(parseInt(target.value))}
             step="1"
@@ -49,17 +51,23 @@ function App() {
             <p>12:00</p>
             <p>20:00</p>
           </div>
+          <p
+            style={{ cursor: "pointer" }}
+            onClick={() => setShowSunPath(!showSunPath)}
+          >
+            Sonne {showSunPath ? "ausblenden" : "einblenden"}
+          </p>
         </div>
       </div>
       <Canvas shadows camera={{ fov: 45, position: [8, 10, 10] }}>
         <fog attach="fog" args={["white", 5.5, 40]} />
         <ambientLight intensity={0.2} />
-        <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
-        <pointLight position={[-10, -10, -10]} />
+        <spotLight position={[20, 20, 20]} angle={0.15} penumbra={1} />
+        <pointLight position={[-20, -20, -20]} />
         <directionalLight
           castShadow
           position={path.getSpacedPoints(100)[percentage]}
-          intensity={1}
+          intensity={3}
           shadow-mapSize-width={1024}
           shadow-mapSize-height={1024}
           shadow-camera-far={100}
@@ -68,10 +76,13 @@ function App() {
           shadow-camera-top={15}
           shadow-camera-bottom={-15}
         />
-        <mesh position={[0, 0.5, 0]} castShadow receiveShadow>
+        <mesh scale={0.5} position={[-1.5, 0.25, 1]} castShadow receiveShadow>
           <boxGeometry />
           <meshStandardMaterial attach="material" color="gray" />
         </mesh>
+        <Suspense fallback={false}>
+          <Model />
+        </Suspense>
 
         <mesh
           receiveShadow
@@ -79,11 +90,19 @@ function App() {
           position={[0, 0, 0]}
         >
           <planeBufferGeometry attach="geometry" args={[100, 100]} />
-          <shadowMaterial attach="material" opacity={0.3} color="darkblue" />
+          <shadowMaterial attach="material" opacity={0.2} color="black" />
         </mesh>
 
-        {/* @ts-ignore */}
-        {/* <Line points={path.getPoints(50)} color="purple" /> */}
+        {showSunPath && (
+          <>
+            {/* @ts-ignore */}
+            <Line points={path.getPoints(50)} color="purple" />
+            <mesh position={path.getSpacedPoints(100)[percentage]} scale={0.1}>
+              <sphereGeometry />
+              <meshStandardMaterial attach="material" color="yellow" />
+            </mesh>
+          </>
+        )}
         <OrbitControls target0={new Vector3(0, 0, 0)} />
       </Canvas>
     </div>
