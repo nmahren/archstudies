@@ -3,7 +3,7 @@ import { Canvas } from "@react-three/fiber";
 import React, { Suspense, useState } from "react";
 import { QuadraticBezierCurve3, Vector3 } from "three";
 import "./App.css";
-import Model from "./components/Untitled";
+import Model from "./components/Clean";
 
 const path = new QuadraticBezierCurve3(
   new Vector3(-5, -0.5, -1),
@@ -13,6 +13,8 @@ const path = new QuadraticBezierCurve3(
 function App() {
   const [percentage, setPercentage] = useState(20);
   const [showSunPath, setShowSunPath] = useState(false);
+
+  // softShadows();
 
   return (
     <div style={{ height: "100vh" }}>

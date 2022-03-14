@@ -40,5 +40,3 @@ export default function Model({ ...props }: JSX.IntrinsicElements["group"]) {
     </group>
   );
 }
-
-useGLTF.preload("/untitled.glb");
